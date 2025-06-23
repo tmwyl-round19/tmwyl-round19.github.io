@@ -41,26 +41,40 @@ function dragElement(elmnt) {
   }
 }
 
-let level = 1;
-
 class Window {
-    constructor(id, maxTime /* in 1/10 seconds*/, name) {
+    constructor(id, maxTime /* in 1/10 seconds*/, name, dialog) {
         this.id = 'a'+  id;
         this.element = document.getElementById(this.id.toString());
         this.intervals = [];
         this.maxTime = maxTime;
         this.time = maxTime;
-        console.log(id);
         this.header = document.getElementById('header' + this.id);
-        console.log(this.header)
         this.name = name;
         this.header.innerHTML = name + ` (${(this.time/10).toFixed(1)})`;
         this.win = false;
+        this.wins = 0;
+        this.dialog = dialog;
     }
 }
 
+////
+
+let level = 1;
+
+const windows = [
+    new Window(1, 250, '8 Puzzle'),
+    new Window(2, 150, 'Unique Word'),
+    new Window(3, 300, 'Modulo Shooter')
+];
+
 function resetTime(win) {
     win.time = win.maxTime;
+    win.wins++;
+    if (win.wins == 1) {
+        level++;
+        open(windows[level - 1]);
+    }
+    win.win = false;
     win.reset();
 }
 
@@ -68,10 +82,11 @@ function decrTime(win) {
     win.time -= 1;
     win.header.innerHTML = win.name + ` (${(win.time/10).toFixed(1)})`;
     if (win.time <= 0) {
-        if (!win.win) {
-            win.intervals.forEach(clearInterval); // GAME LOST
+        if (win.win) {
+            resetTime(win) // GAME LOST
+        } else {
+            win.intervals.forEach(clearInterval);
         }
-        else resetTime(win);
     }
 }
 
@@ -83,18 +98,16 @@ function open(win) {
     win.intervals.push(setInterval(decrTime, 100, win))
 }
 
-const windows = [
-    new Window(1, 600, '8 Puzzle'),
-    new Window(2, 150, 'Unique Word')
-];
-
 // LEVEL 1
 
 let l1board = windows[0].element.children[1].children[0].children;
 
 let grid = [1,2,3,4,5,6,7,8,0];
+let gridStart = [...grid];
 let zero = grid.findIndex(e => !e);
 let zeroX = zero % 3, zeroY = Math.floor(zero / 3);
+let a1data = document.getElementById('a1data');
+let a1moves = 0;
 
 for (let i = 0; i < l1board.length; i++) {
     l1board[i].style.top = Math.floor(i / 3) * 100 + 'px';
@@ -111,18 +124,19 @@ for (let i = 0; i < l1board.length; i++) {
 
         if ((Math.abs(x - zeroX) == 1 && y == zeroY)
             || (x == zeroX && Math.abs(y - zeroY) == 1)) {
-            let thingVal = grid[idx]
+
+            let thingVal = grid[idx];
             grid[zero] = thingVal;
             grid[idx] = 0;
 
             document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
             document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
-
-            windows[1].win = grid.every((e, i) => e == [1,2,3,4,5,6,7,8,0][i]);
+            a1moves++;
+            a1data.innerHTML = `Moves: ${a1moves}`;
+            windows[0].win = grid.every((e, i) => e == gridStart[i]);
         }
     })
 }
-
 
 function randomMove(grid) {
     zero = grid.findIndex(e => !e);
@@ -130,7 +144,6 @@ function randomMove(grid) {
     let orthogonals = [[zeroX + 1, zeroY], [zeroX - 1, zeroY], [zeroX, zeroY - 1], [zeroX, zeroY + 1]]
                     .filter(e => (e[0] < 3 && e[0] > -1 && e[1] < 3 && e[1] > -1));
     let [moveX, moveY] = orthogonals[Math.floor(Math.random() * orthogonals.length)];
-    console.log(moveX, moveY);
     let thing = moveY * 3 + moveX;
     let thingVal = grid[thing]
     grid[zero] = thingVal;
@@ -164,9 +177,8 @@ a2input.addEventListener('input', function(e) {
 
 windows[1].reset = () => {
     usedWords.push(a2input.value);
-    a2input.value = '';
-    windows[1].win = false;
     a2data.textContent = `Words entered: ${usedWords.length}`;
+    a2input.value = '';
 };
 /// DONE
 
