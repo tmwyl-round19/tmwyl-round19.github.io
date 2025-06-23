@@ -98,7 +98,7 @@ var windows = [
 ];
 
 function open(win) { 
-    if (!win) return alert("you won");
+    if (!win) return;
     win.element.hidden = false;
     win.element.style.top = Math.random() * (window.innerHeight - 400) + 'px';
     win.element.style.left = Math.random() * (window.innerWidth - 400) + 'px';
