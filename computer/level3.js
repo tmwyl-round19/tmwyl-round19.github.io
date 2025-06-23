@@ -13,8 +13,8 @@ let mouseY = -1
 
 
 let SCORE = 0
-let BASE = 5
-let REMAINDER = 0
+let BASE = 4;
+let REMAINDER = 0;
 
 
 let BLOCKS = [];
@@ -59,8 +59,9 @@ class Block {
 
         if (this.y > INITHEIGHT - 16) {
             this.destroy();
-           // SCORE -= 1;
-            //score_elem.innerText = 'Score: ' + SCORE;
+            SCORE -= .5;
+            score_elem.innerText = 'Score: ' + SCORE;
+            windows[2].win = (SCORE > 0);
         }
     }
 }
@@ -113,7 +114,7 @@ class Ball {
         let rect = this.elem.getBoundingClientRect();
 
 
-        if ((rect.x <= 0) || (rect.x >= INITWIDTH) || (rect.y <= 0)) {
+        if ((rect.x <= 0) || (rect.x >= window.innerWidth) || (rect.y <= 0) || (rect.y >= window.innerWidth)) {
             this.destroy();
         }
    
@@ -128,14 +129,14 @@ class Ball {
                 if ((blockRect.x < corner[0]) && (corner[0] < (blockRect.x + blockRect.width)) &&
                    (blockRect.y < corner[1]) && (corner[1] < (blockRect.y + blockRect.height)) )  {
 
-
-                    if ((block.value % BASE) == this.remainder) {
+                    if ((block.question % BASE) == this.remainder) {
                         block.destroy();
                         this.destroy();
                         score_elem.innerText = 'Score: ' + (++SCORE);
+                        windows[2].win = (SCORE > 0);
                     } else {
                         this.destroy();
-                        block.speed++;
+                       // block.speed++;
                         // score_elem.innerText = 'Score: ' + (--SCORE);
                     }
                    
@@ -147,7 +148,7 @@ class Ball {
 }
 
 
-if (!env.hidden) for (let i = 0; i < 5; i++) BLOCKS.push(new RemainderBlock());
+//if (!env.hidden) for (let i = 0; i < 5; i++) BLOCKS.push(new RemainderBlock());
 
 
 function spawn() {
@@ -184,12 +185,19 @@ document.onkeydown = function(e) {
 }
     
 
-env.onmousemove = function(e) {
+document.onmousemove = function(e) {
     mouseX = e.clientX - env.style.left.slice(0, env.style.left.length - 2);
     mouseY = e.clientY - env.style.top.slice(0, env.style.top.length - 2);
     let t = Math.atan2(mouseY - .96 /* see css; Thing is shifted 96 vh down */ * INITHEIGHT, mouseX - INITWIDTH/2) * 180 / Math.PI;
     // score_elem.innerText = t;
     thing.style.transform = `rotate(${t}deg)`;
+}
+
+env.onmousemove = document.onmousemove
+windows[2].header.onmousemove = document.onmousemove
+
+windows[2].reset = function(e) {
+    // idk put stuff here    
 }
 
 

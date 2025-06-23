@@ -70,9 +70,9 @@ class GameWindow {
         this.header.innerHTML = this.name + ` (${(this.time/10).toFixed(1)})`;
         if (this.time <= 0) {
             if (this.win) {
-                this.resetTime(); 
+                this.resetTime(); // GAME LOST
             } else {
-                this.intervals.forEach(clearInterval);// GAME LOST
+                this.intervals.forEach(clearInterval);
             }
         }
     }
@@ -80,27 +80,23 @@ class GameWindow {
 
 ////
 
-let level = 3;
-
-const windows = [
-    new GameWindow(1, 250, '8 Puzzle', "Welcome to The Game! This game consists of simultaneous challenges contained in different \"windows\". Each challenge has a repeating timer, and in order to win, it must be in its completed state when the timer reaches zero. You can move windows around by dragging its blue top bar.<br />Your first challenge: Solve the 8 Puzzle in 25 seconds. Click on any number adjacent to the empty space to move it there. When solved, the numbers should be in ascending order from left to right, then top to bottom, followed by the empty space. Your first completion of a challenge will unlock the next one."),
+let level = 1;
+var windows = [
+    new GameWindow(1, 350, '8 Puzzle', "Welcome to The Game! This game consists of simultaneous challenges contained in different \"windows\". Each challenge has a repeating timer, and in order to win, it must be in its completed state when the timer reaches zero. You can move windows around by dragging its blue top bar.<br />Your first challenge: Solve the 8 Puzzle in 25 seconds. Click on any number adjacent to the empty space to move it there. When solved, the numbers should be in ascending order from left to right, then top to bottom, followed by the empty space. Your first completion of a challenge will unlock the next one."),
     new GameWindow(2, 150, 'Unique Word', "Enter a valid dictionary word into the box in 15 seconds. You automatically fail if you use any words you have previously entered."),
-    new GameWindow(3, 300, 'Modulo Shooter', "Move the mouse to aim and press a number key to shoot a ball with that number. Balls with the number n will destroy a falling block with the number d only if d divided by 6 leaves a remainder of n; for example, 362 divided by 6 leaves a remainder of 2, so to destroy that block, you would aim at it and press the 2 key.<br />Each block destroyed adds a point, and each block that leaves the window boundaries subtracts a point. Keep your score greater than 0 in 30 seconds."),
-    new GameWindow(4, 200, "Slider Madness", "rfgfggv"),
-    new GameWindow(5, 200, 'Quick Math', "Write the solution to the given arithmetic problem. The solution will always be an integer; do not add any decimal signs or unnecessary symbols.")
+    new GameWindow(3, 350, 'Modulo Shooter', "Move the mouse to aim and press a number key to shoot a ball with that number. Balls with the number n will destroy a falling block with the number d only if d divided by 6 leaves a remainder of n; for example, 362 divided by 6 leaves a remainder of 2, so to destroy that block, you would aim at it and press the 2 key.<br />Each block destroyed adds a point, and each block that leaves the window boundaries subtracts a point. Keep your score greater than 0 in 30 seconds."),
+    new GameWindow(4, 300, 'Button', "Click the button exactly the number of specified times in 30 seconds."),
+    new GameWindow(5, 200, 'Quick Math', "Write the solution to the given arithmetic problem. The solution will always be an integer; do not add any decimal signs or unnecessary symbols."),
 ];
  
 function open(win) { 
-    if (!(reset in win)) {
-      level++;
-      open(windows[level - 1]);
-    }
     win.element.hidden = false;
     win.element.style.top = Math.random() * (window.innerHeight - 400) + 'px';
     win.element.style.left = Math.random() * (window.innerWidth - 400) + 'px';
     dragElement(win.element);
     win.intervals.push(setInterval(() => win.decrTime(), 100))
 }
+
 
 let runningtime = document.querySelector('h1');
 let time = 0;
@@ -112,4 +108,4 @@ let rti = setInterval(() => {
 
 
 }, 100);
-open(windows[level - 1]);
+open(windows[0]);
