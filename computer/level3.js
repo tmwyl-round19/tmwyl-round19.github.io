@@ -77,6 +77,7 @@ class RemainderBlock extends Block {
 class Ball {
     constructor(t) {
         this.remainder = REMAINDER;
+        if (isNaN(this.remainder)) this.destroy();
         this.velx = Math.cos(-t);
         this.vely = Math.sin(-t);
         this.x = INITWIDTH / 2;
@@ -136,7 +137,7 @@ class Ball {
                         windows[2].win = (SCORE > 0);
                     } else {
                         this.destroy();
-                       // block.speed++;
+                        block.speed += .5;
                         // score_elem.innerText = 'Score: ' + (--SCORE);
                     }
                    
@@ -170,7 +171,7 @@ function clearBlocks() {
 }
 
 
-let spawnInt = setInterval(() => !env.hidden && spawn(), 4_000);
+let spawnInt = setInterval(() => !env.hidden && spawn(), 5_500);
 
 
 const keykey = "0123456789abcdefghijklmnopqrstuvwxyz".split('');
