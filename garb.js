@@ -70,9 +70,9 @@ class GameWindow {
         this.header.innerHTML = this.name + ` (${(this.time/10).toFixed(1)})`;
         if (this.time <= 0) {
             if (this.win) {
-                this.resetTime(); // GAME LOST
+                this.resetTime(); 
             } else {
-                this.intervals.forEach(clearInterval);
+                this.intervals.forEach(clearInterval);// GAME LOST
             }
         }
     }
@@ -80,132 +80,27 @@ class GameWindow {
 
 ////
 
-let level = 1;
+let level = 3;
 
 const windows = [
-    new GameWindow(1, 250, '8 Puzzle'),
-    new GameWindow(2, 150, 'Unique Word'),
-    new GameWindow(3, 300, 'Modulo Shooter')
+    new GameWindow(1, 250, '8 Puzzle', "Welcome to The Game! This game consists of simultaneous challenges contained in different \"windows\". Each challenge has a repeating timer, and in order to win, it must be in its completed state when the timer reaches zero. You can move windows around by dragging its blue top bar.<br />Your first challenge: Solve the 8 Puzzle in 25 seconds. Click on any number adjacent to the empty space to move it there. When solved, the numbers should be in ascending order from left to right, then top to bottom, followed by the empty space. Your first completion of a challenge will unlock the next one."),
+    new GameWindow(2, 150, 'Unique Word', "Enter a valid dictionary word into the box in 15 seconds. You automatically fail if you use any words you have previously entered."),
+    new GameWindow(3, 300, 'Modulo Shooter', "Move the mouse to aim and press a number key to shoot a ball with that number. Balls with the number n will destroy a falling block with the number d only if d divided by 6 leaves a remainder of n; for example, 362 divided by 6 leaves a remainder of 2, so to destroy that block, you would aim at it and press the 2 key.<br />Each block destroyed adds a point, and each block that leaves the window boundaries subtracts a point. Keep your score greater than 0 in 30 seconds."),
+    new GameWindow(4, 200, "Slider Madness", "rfgfggv"),
+    new GameWindow(5, 200, 'Quick Math', "Write the solution to the given arithmetic problem. The solution will always be an integer; do not add any decimal signs or unnecessary symbols.")
 ];
-
-// function resetTime(win) {
-//     win.time = win.maxTime;
-//     win.wins++;
-//     if (win.wins == 1) {
-//         level++;
-//         open(windows[level - 1]);
-//     }
-//     win.win = false;
-//     win.reset();
-// }
-
-// function decrTime(win) {
-//     win.time -= 1;
-//     win.header.innerHTML = win.name + ` (${(win.time/10).toFixed(1)})`;
-//     if (win.time <= 0) {
-//         if (win.win) {
-//             resetTime(win) // GAME LOST
-//         } else {
-//             win.intervals.forEach(clearInterval);
-//         }
-//     }
-// }
  
 function open(win) { 
+    if (!(reset in win)) {
+      level++;
+      open(windows[level - 1]);
+    }
     win.element.hidden = false;
     win.element.style.top = Math.random() * (window.innerHeight - 400) + 'px';
     win.element.style.left = Math.random() * (window.innerWidth - 400) + 'px';
     dragElement(win.element);
     win.intervals.push(setInterval(() => win.decrTime(), 100))
 }
-
-// LEVEL 1
-
-// let l1board = windows[0].element.children[1].children[0].children;
-
-// let grid = [1,2,3,4,5,6,7,8,0];
-// let gridStart = [...grid];
-// let zero = grid.findIndex(e => !e);
-// let zeroX = zero % 3, zeroY = Math.floor(zero / 3);
-// let a1data = document.getElementById('a1data');
-// let a1moves = 0;
-
-// for (let i = 0; i < l1board.length; i++) {
-//     l1board[i].style.top = Math.floor(i / 3) * 100 + 'px';
-//     l1board[i].style.left = 100 * (i % 3) + 'px';
-//     l1board[i].addEventListener('click', function (e) {
-//         let sq = e.target.style;
-//         let x = +(sq.left.slice(0, sq.left.length - 2)) / 100;
-//         let y = +(sq.top.slice(0, sq.top.length - 2)) / 100;
-
-//         let idx = y * 3 + x;
-
-//         zero = grid.findIndex(e => !e);
-//         zeroX = zero % 3, zeroY = Math.floor(zero / 3);
-
-//         if ((Math.abs(x - zeroX) == 1 && y == zeroY)
-//             || (x == zeroX && Math.abs(y - zeroY) == 1)) {
-
-//             let thingVal = grid[idx];
-//             grid[zero] = thingVal;
-//             grid[idx] = 0;
-
-//             document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
-//             document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
-//             a1moves++;
-//             a1data.innerHTML = `Moves: ${a1moves}`;
-//             windows[0].win = grid.every((e, i) => e == gridStart[i]);
-//         }
-//     })
-// }
-
-// function randomMove(grid) {
-//     zero = grid.findIndex(e => !e);
-//     zeroX = zero % 3, zeroY = Math.floor(zero / 3);
-//     let orthogonals = [[zeroX + 1, zeroY], [zeroX - 1, zeroY], [zeroX, zeroY - 1], [zeroX, zeroY + 1]]
-//                     .filter(e => (e[0] < 3 && e[0] > -1 && e[1] < 3 && e[1] > -1));
-//     let [moveX, moveY] = orthogonals[Math.floor(Math.random() * orthogonals.length)];
-//     let thing = moveY * 3 + moveX;
-//     let thingVal = grid[thing]
-//     grid[zero] = thingVal;
-//     grid[thing] = 0;
-
-//     document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
-//     document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
-// }
-
-// windows[0].reset = () => {for (let i = 1; i<=50; i++) randomMove(grid);}
-// windows[0].reset();
-///
-
-// // LEVEL 2
-
-// let usedWords = [];
-// let previousInput = "";
-// let requiredRegex = /^[a-zA-Z]+$/;
-// let a2input = document.getElementById('a2input');
-// let a2data = document.getElementById('a2data');
-// a2input.addEventListener('input', function(e) {
-//     let value = e.target.value;
-//     if (value.match(requiredRegex) || value == '') { 
-//         previousInput = value;
-//         a2input.value = value.toLowerCase();
-//     } else {
-//         a2input.value = previousInput;
-//     }
-//     windows[1].win = a2input.value && !usedWords.includes(a2input.value);
-// });
-
-// windows[1].reset = () => {
-//     usedWords.push(a2input.value);
-//     a2data.textContent = `Words entered: ${usedWords.length}`;
-//     a2input.value = '';
-// };
-/// DONE
-
-// LEVEL 3
-
-
 
 let runningtime = document.querySelector('h1');
 let time = 0;
@@ -217,4 +112,4 @@ let rti = setInterval(() => {
 
 
 }, 100);
-open(windows[0]);
+open(windows[level - 1]);
