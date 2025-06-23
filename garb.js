@@ -72,7 +72,8 @@ class GameWindow {
             if (this.win) {
                 this.resetTime(); // GAME LOST
             } else {
-                this.intervals.forEach(clearInterval);
+                windows.forEach((e, i)=>e.intervals.forEach(clearInterval));
+                alert("btw you lost reload the page to try again");
             }
         }
     }
@@ -89,7 +90,7 @@ dialogChild.innerHTML = "Welcome to The Game! This game consists of several task
 dialog.show();
 var windows = [
     new GameWindow(1, 350, '8 Puzzle', "Your first task: Solve the 8 Puzzle in 35 seconds. Click on any number adjacent to the empty space to move it there. When solved, the numbers should be in ascending order from left to right, then top to bottom, followed by the empty space. Your first completion of a task will unlock the next one.<br/><br/><i>(You can move a window around by dragging its blue top bar.)</i>"),
-    new GameWindow(2, 150, 'Unique Word', "Enter a word into the box in 15 seconds. You automatically fail if you use any words you have previously entered."),
+    new GameWindow(2, 150, 'Unique Word', `Enter a word into the box in 15 seconds. You automatically fail if you use any words you have previously entered.`),
     new GameWindow(3, 500, 'Modulo Shooter', "Move the mouse to aim and press a number key to shoot a ball with that number.<br /><br/>Balls with the number <i>n</i> will destroy a falling block with the number <i>d</i> only if <i>d</i> <b>divided by 4</b> leaves a <b>remainder</b> of <i>n</i>; for example, 362 divided by 4 leaves a remainder of 2, so to destroy that block, you would aim at it and press the 2 key.<br /><br />Each block destroyed adds a point, and each block that leaves the window boundaries subtracts half a point. Keep your score greater than 0 in 50 seconds."),
     new GameWindow(4, 300, 'Button', "Click the button exactly the number of specified times in 30 seconds."),
     new GameWindow(5, 200, 'Quick Math', "Write the solution to the given arithmetic problem in 20 seconds. The solution will always be an integer; do not add any decimal signs or unnecessary symbols."),
