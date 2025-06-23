@@ -41,7 +41,7 @@ function dragElement(elmnt) {
   }
 }
 
-class Window {
+class GameWindow {
     constructor(id, maxTime /* in 1/10 seconds*/, name, dialog) {
         this.id = 'a'+  id;
         this.element = document.getElementById(this.id.toString());
@@ -55,6 +55,27 @@ class Window {
         this.wins = 0;
         this.dialog = dialog;
     }
+    resetTime() {
+        this.time = this.maxTime;
+        this.wins++;
+        if (this.wins == 1) {
+            level++;
+            open(windows[level - 1]);
+        }
+        this.win = false;
+        this.reset();
+    }
+    decrTime() {
+        this.time -= 1;
+        this.header.innerHTML = this.name + ` (${(this.time/10).toFixed(1)})`;
+        if (this.time <= 0) {
+            if (this.win) {
+                this.resetTime(); // GAME LOST
+            } else {
+                this.intervals.forEach(clearInterval);
+            }
+        }
+    }
 }
 
 ////
@@ -62,124 +83,124 @@ class Window {
 let level = 1;
 
 const windows = [
-    new Window(1, 250, '8 Puzzle'),
-    new Window(2, 150, 'Unique Word'),
-    new Window(3, 300, 'Modulo Shooter')
+    new GameWindow(1, 250, '8 Puzzle'),
+    new GameWindow(2, 150, 'Unique Word'),
+    new GameWindow(3, 300, 'Modulo Shooter')
 ];
 
-function resetTime(win) {
-    win.time = win.maxTime;
-    win.wins++;
-    if (win.wins == 1) {
-        level++;
-        open(windows[level - 1]);
-    }
-    win.win = false;
-    win.reset();
-}
+// function resetTime(win) {
+//     win.time = win.maxTime;
+//     win.wins++;
+//     if (win.wins == 1) {
+//         level++;
+//         open(windows[level - 1]);
+//     }
+//     win.win = false;
+//     win.reset();
+// }
 
-function decrTime(win) {
-    win.time -= 1;
-    win.header.innerHTML = win.name + ` (${(win.time/10).toFixed(1)})`;
-    if (win.time <= 0) {
-        if (win.win) {
-            resetTime(win) // GAME LOST
-        } else {
-            win.intervals.forEach(clearInterval);
-        }
-    }
-}
-
+// function decrTime(win) {
+//     win.time -= 1;
+//     win.header.innerHTML = win.name + ` (${(win.time/10).toFixed(1)})`;
+//     if (win.time <= 0) {
+//         if (win.win) {
+//             resetTime(win) // GAME LOST
+//         } else {
+//             win.intervals.forEach(clearInterval);
+//         }
+//     }
+// }
+ 
 function open(win) { 
     win.element.hidden = false;
     win.element.style.top = Math.random() * (window.innerHeight - 400) + 'px';
     win.element.style.left = Math.random() * (window.innerWidth - 400) + 'px';
     dragElement(win.element);
-    win.intervals.push(setInterval(decrTime, 100, win))
+    win.intervals.push(setInterval(() => win.decrTime(), 100))
 }
 
 // LEVEL 1
 
-let l1board = windows[0].element.children[1].children[0].children;
+// let l1board = windows[0].element.children[1].children[0].children;
 
-let grid = [1,2,3,4,5,6,7,8,0];
-let gridStart = [...grid];
-let zero = grid.findIndex(e => !e);
-let zeroX = zero % 3, zeroY = Math.floor(zero / 3);
-let a1data = document.getElementById('a1data');
-let a1moves = 0;
+// let grid = [1,2,3,4,5,6,7,8,0];
+// let gridStart = [...grid];
+// let zero = grid.findIndex(e => !e);
+// let zeroX = zero % 3, zeroY = Math.floor(zero / 3);
+// let a1data = document.getElementById('a1data');
+// let a1moves = 0;
 
-for (let i = 0; i < l1board.length; i++) {
-    l1board[i].style.top = Math.floor(i / 3) * 100 + 'px';
-    l1board[i].style.left = 100 * (i % 3) + 'px';
-    l1board[i].addEventListener('click', function (e) {
-        let sq = e.target.style;
-        let x = +(sq.left.slice(0, sq.left.length - 2)) / 100;
-        let y = +(sq.top.slice(0, sq.top.length - 2)) / 100;
+// for (let i = 0; i < l1board.length; i++) {
+//     l1board[i].style.top = Math.floor(i / 3) * 100 + 'px';
+//     l1board[i].style.left = 100 * (i % 3) + 'px';
+//     l1board[i].addEventListener('click', function (e) {
+//         let sq = e.target.style;
+//         let x = +(sq.left.slice(0, sq.left.length - 2)) / 100;
+//         let y = +(sq.top.slice(0, sq.top.length - 2)) / 100;
 
-        let idx = y * 3 + x;
+//         let idx = y * 3 + x;
 
-        zero = grid.findIndex(e => !e);
-        zeroX = zero % 3, zeroY = Math.floor(zero / 3);
+//         zero = grid.findIndex(e => !e);
+//         zeroX = zero % 3, zeroY = Math.floor(zero / 3);
 
-        if ((Math.abs(x - zeroX) == 1 && y == zeroY)
-            || (x == zeroX && Math.abs(y - zeroY) == 1)) {
+//         if ((Math.abs(x - zeroX) == 1 && y == zeroY)
+//             || (x == zeroX && Math.abs(y - zeroY) == 1)) {
 
-            let thingVal = grid[idx];
-            grid[zero] = thingVal;
-            grid[idx] = 0;
+//             let thingVal = grid[idx];
+//             grid[zero] = thingVal;
+//             grid[idx] = 0;
 
-            document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
-            document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
-            a1moves++;
-            a1data.innerHTML = `Moves: ${a1moves}`;
-            windows[0].win = grid.every((e, i) => e == gridStart[i]);
-        }
-    })
-}
+//             document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
+//             document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
+//             a1moves++;
+//             a1data.innerHTML = `Moves: ${a1moves}`;
+//             windows[0].win = grid.every((e, i) => e == gridStart[i]);
+//         }
+//     })
+// }
 
-function randomMove(grid) {
-    zero = grid.findIndex(e => !e);
-    zeroX = zero % 3, zeroY = Math.floor(zero / 3);
-    let orthogonals = [[zeroX + 1, zeroY], [zeroX - 1, zeroY], [zeroX, zeroY - 1], [zeroX, zeroY + 1]]
-                    .filter(e => (e[0] < 3 && e[0] > -1 && e[1] < 3 && e[1] > -1));
-    let [moveX, moveY] = orthogonals[Math.floor(Math.random() * orthogonals.length)];
-    let thing = moveY * 3 + moveX;
-    let thingVal = grid[thing]
-    grid[zero] = thingVal;
-    grid[thing] = 0;
+// function randomMove(grid) {
+//     zero = grid.findIndex(e => !e);
+//     zeroX = zero % 3, zeroY = Math.floor(zero / 3);
+//     let orthogonals = [[zeroX + 1, zeroY], [zeroX - 1, zeroY], [zeroX, zeroY - 1], [zeroX, zeroY + 1]]
+//                     .filter(e => (e[0] < 3 && e[0] > -1 && e[1] < 3 && e[1] > -1));
+//     let [moveX, moveY] = orthogonals[Math.floor(Math.random() * orthogonals.length)];
+//     let thing = moveY * 3 + moveX;
+//     let thingVal = grid[thing]
+//     grid[zero] = thingVal;
+//     grid[thing] = 0;
 
-    document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
-    document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
-}
+//     document.getElementById('g' + (thingVal)).style.top = zeroY * 100 + 'px';
+//     document.getElementById('g' + (thingVal)).style.left = zeroX * 100 + 'px';
+// }
 
-windows[0].reset = () => {for (let i = 1; i<=50; i++) randomMove(grid);}
-windows[0].reset();
+// windows[0].reset = () => {for (let i = 1; i<=50; i++) randomMove(grid);}
+// windows[0].reset();
 ///
 
-// LEVEL 2
+// // LEVEL 2
 
-let usedWords = [];
-let previousInput = "";
-let requiredRegex = /^[a-zA-Z]+$/;
-let a2input = document.getElementById('a2input');
-let a2data = document.getElementById('a2data');
-a2input.addEventListener('input', function(e) {
-    let value = e.target.value;
-    if (value.match(requiredRegex) || value == '') { 
-        previousInput = value;
-        a2input.value = value.toLowerCase();
-    } else {
-        a2input.value = previousInput;
-    }
-    windows[1].win = a2input.value && !usedWords.includes(a2input.value);
-});
+// let usedWords = [];
+// let previousInput = "";
+// let requiredRegex = /^[a-zA-Z]+$/;
+// let a2input = document.getElementById('a2input');
+// let a2data = document.getElementById('a2data');
+// a2input.addEventListener('input', function(e) {
+//     let value = e.target.value;
+//     if (value.match(requiredRegex) || value == '') { 
+//         previousInput = value;
+//         a2input.value = value.toLowerCase();
+//     } else {
+//         a2input.value = previousInput;
+//     }
+//     windows[1].win = a2input.value && !usedWords.includes(a2input.value);
+// });
 
-windows[1].reset = () => {
-    usedWords.push(a2input.value);
-    a2data.textContent = `Words entered: ${usedWords.length}`;
-    a2input.value = '';
-};
+// windows[1].reset = () => {
+//     usedWords.push(a2input.value);
+//     a2data.textContent = `Words entered: ${usedWords.length}`;
+//     a2input.value = '';
+// };
 /// DONE
 
 // LEVEL 3
